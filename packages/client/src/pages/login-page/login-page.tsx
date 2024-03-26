@@ -10,8 +10,6 @@ import {
   validateRequired,
 } from '@/helpers';
 import { useAuth } from '@/helpers/hooks/useAuth';
-import { useAppDispatch } from '@/hooks';
-import { setUserAuth } from '@/store/userSlice';
 
 type LoginFieldType = {
   login: string;
@@ -21,7 +19,6 @@ type LoginFieldType = {
 export const LoginPage = () => {
   setPageTitle('Войти');
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [notify, contextHolder] = notification.useNotification();
   const { setAuth } = useAuth();
 
@@ -31,7 +28,6 @@ export const LoginPage = () => {
   }) => {
     const result = await AuthService.login({ login, password });
     if (result?.isOk) {
-      dispatch(setUserAuth(true));
       setAuth?.();
       navigate('/');
       return;

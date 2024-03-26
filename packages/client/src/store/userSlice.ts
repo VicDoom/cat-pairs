@@ -8,14 +8,12 @@ type CatPairsState = {
   currentUser: User;
   error: undefined | string;
   theme: string;
-  userAuth: boolean;
 };
 
 const initialState: CatPairsState = {
   currentUser: userNotAutn,
   error: undefined,
   theme: Theme.Light,
-  userAuth: false,
 };
 const abortController = new AbortController();
 export const fetchGetCurrentUser = createAsyncThunk<
@@ -61,9 +59,6 @@ const userSlice = createSlice({
     setThemeLight(state): void {
       state.theme = Theme.Light;
     },
-    setUserAuth(state, action: PayloadAction<boolean>): void {
-      state.userAuth = action.payload;
-    },
   },
   extraReducers: builder => {
     builder
@@ -87,7 +82,6 @@ export const {
   setThemeDark,
   setThemeLight,
   deleteCurrentUser,
-  setUserAuth,
 } = userSlice.actions;
 export default userSlice.reducer;
 
