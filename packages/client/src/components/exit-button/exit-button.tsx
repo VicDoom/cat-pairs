@@ -4,14 +4,16 @@ import './exit-button.css';
 import { Color } from '@/helpers/constants/global';
 import { AuthService } from '@/services/auth';
 import { MessagePopup } from '../message-popup';
-import { deleteCurrentUser, setUserAuth } from '@/store/userSlice';
+import { deleteCurrentUser } from '@/store/userSlice';
 import { useAppDispatch } from '@/hooks';
 import { useState } from 'react';
 import React from 'react';
+import { useAuth } from '@/helpers/hooks/useAuth';
 
 export const ExitButton: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { deleteAuth } = useAuth();
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -27,7 +29,7 @@ export const ExitButton: React.FC = () => {
     const result = await AuthService.logout();
     if (result?.isOk) {
       dispatch(deleteCurrentUser());
-      dispatch(setUserAuth(false));
+      deleteAuth?.();
       navigate('/login');
       return;
     } else {

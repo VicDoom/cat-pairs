@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from '@/hooks';
+import { useAppDispatch } from '@/hooks';
 import { setCurrentUser } from '@/store/userSlice';
 import { UserService } from '@/services/user';
 import React, { createContext, useEffect, useRef, useState } from 'react';
@@ -7,12 +7,14 @@ type AuthContextType = {
   isAuth: boolean;
   isLoading: boolean;
   setAuth?: () => void;
+  deleteAuth?: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   isAuth: false,
   isLoading: true,
   setAuth: undefined,
+  deleteAuth: undefined,
 });
 
 interface AuthProviderProps {
@@ -21,7 +23,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = props => {
   const dispatch = useAppDispatch();
-  const isUserAuth = useAppSelector(state => state.user.userAuth);
+  // const isUserAuth = useAppSelector(state => state.user.userAuth);
 
   const { children } = props;
   const [isAuth, setIsAuth] = useState(false);
@@ -37,14 +39,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
     stopLoading();
   };
 
+  const deleteAuth = () => {
+    setIsAuth(false);
+  };
+
   useEffect(() => {
     if (!isAuthRef.current) {
       isAuthRef.current = true;
       UserService.getCurrentUser({ signal: abortController.signal }).then(
         res => {
           if (res?.isOk) {
+            if (res?.user) {
+              dispatch(setCurrentUser(res.user));
+            }
             handleAuth();
-            if (res?.user) dispatch(setCurrentUser(res.user));
+            return;
           }
           stopLoading();
         }
@@ -69,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
     return () => {
       !isAuthRef.current && abortController.abort();
     };
-  }, [isUserAuth]);
+  }, [isAuth]);
 
   return (
     <AuthContext.Provider
@@ -77,6 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
         isAuth,
         isLoading,
         setAuth: handleAuth,
+        deleteAuth,
       }}>
       {children}
     </AuthContext.Provider>
