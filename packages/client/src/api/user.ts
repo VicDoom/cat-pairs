@@ -1,6 +1,6 @@
 import { fetchHelper } from '@/helpers';
 import { YANDEX_API_HOST } from '@/helpers/constants/api';
-import { DataChangePassword } from '@/helpers/types/user';
+import { DataChangePassword, ProfileFieldType } from '@/helpers/types/user';
 
 export class UserApi {
   static async changePassword(params: DataChangePassword) {
@@ -17,6 +17,14 @@ export class UserApi {
       method: 'PUT',
       body: data,
       credentials: 'include',
+    });
+  }
+
+  static async changeUser(params: ProfileFieldType) {
+    return fetchHelper({
+      url: '/user/profile',
+      method: 'PUT',
+      data: params,
     });
   }
 }

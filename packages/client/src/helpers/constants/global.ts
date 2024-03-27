@@ -26,3 +26,20 @@ export const THEME_ANTD: ThemeConfig = {
     },
   },
 };
+
+export const THEME_ANTD_DARK: ThemeConfig = {
+  token: {
+    colorPrimary: Color.Dark,
+    colorText: Color.Dark,
+    colorIcon: Color.Light,
+    colorLink: Color.Dark,
+    linkDecoration: 'underline',
+    colorLinkActive: Color.Dark,
+    colorLinkHover: Color.Dark,
+  },
+  components: {
+    Typography: {
+      colorText: Color.Light,
+    },
+  },
+};

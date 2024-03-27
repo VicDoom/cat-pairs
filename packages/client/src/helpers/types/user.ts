@@ -24,3 +24,18 @@ export interface AvatarRequestResult {
   avatar?: string;
   error?: string;
 }
+
+export interface CurrentUserRequestResult {
+  isOk: boolean;
+  user?: User;
+  error?: string;
+}
+
+export type ProfileFieldType = {
+  first_name: string;
+  second_name: string;
+  login: string;
+  email: string;
+  phone: string;
+  password: string;
+};

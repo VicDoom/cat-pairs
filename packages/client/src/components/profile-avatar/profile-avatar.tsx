@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './profile-avatar.css';
 import { ProfilePopup } from '@/components/profile-popup';
 import { YANDEX_API_HOST } from '@/helpers/constants/api';
+import { useAppSelector } from '@/helpers/hooks/storeHooks';
 
 export const ProfileAvatar = () => {
   const [image, setImage] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const avatar = useAppSelector(state => state.user.currentUser.avatar);
 
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
   };
-
   const handleClosePopup = () => {
     setIsPopupOpen(false);
   };
@@ -18,6 +19,10 @@ export const ProfileAvatar = () => {
   const handleSetAvatar = (val: string) => {
     setImage(`${YANDEX_API_HOST}/resources${val}`);
   };
+
+  useEffect(() => {
+    setImage(`${YANDEX_API_HOST}/resources${avatar}`);
+  }, []);
 
   return (
     <>

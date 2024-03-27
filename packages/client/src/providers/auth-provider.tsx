@@ -1,16 +1,20 @@
-import { AuthService } from '@/services';
+import { useAppDispatch } from '@/helpers/hooks/storeHooks';
+import { setCurrentUser } from '@/store/userSlice';
+import { UserService } from '@/services/user';
 import React, { createContext, useEffect, useRef, useState } from 'react';
 
 type AuthContextType = {
   isAuth: boolean;
   isLoading: boolean;
   setAuth?: () => void;
+  deleteAuth?: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   isAuth: false,
   isLoading: true,
   setAuth: undefined,
+  deleteAuth: undefined,
 });
 
 interface AuthProviderProps {
@@ -18,6 +22,8 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = props => {
+  const dispatch = useAppDispatch();
+
   const { children } = props;
   const [isAuth, setIsAuth] = useState(false);
   const [isLoading, setLoading] = useState(true);
@@ -32,11 +38,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
     stopLoading();
   };
 
+  const deleteAuth = () => {
+    setIsAuth(false);
+  };
+
   useEffect(() => {
     if (!isAuthRef.current) {
       isAuthRef.current = true;
-      AuthService.getUser({ signal: abortController.signal }).then(isOk =>
-        isOk ? handleAuth() : stopLoading()
+      UserService.getCurrentUser({ signal: abortController.signal }).then(
+        res => {
+          if (res?.isOk) {
+            if (res?.user) {
+              dispatch(setCurrentUser(res.user));
+            }
+            handleAuth();
+            return;
+          }
+          stopLoading();
+        }
       );
     }
     return () => {
@@ -44,12 +63,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
     };
   }, []);
 
+  useEffect(() => {
+    if (isAuth) {
+      UserService.getCurrentUser({ signal: abortController.signal }).then(
+        res => {
+          if (res?.isOk) {
+            if (res?.user) dispatch(setCurrentUser(res.user));
+          }
+        }
+      );
+      stopLoading();
+    }
+    return () => {
+      !isAuthRef.current && abortController.abort();
+    };
+  }, [isAuth]);
+
   return (
     <AuthContext.Provider
       value={{
         isAuth,
         isLoading,
         setAuth: handleAuth,
+        deleteAuth,
       }}>
       {children}
     </AuthContext.Provider>

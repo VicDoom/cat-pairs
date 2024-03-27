@@ -34,10 +34,6 @@ export const NewPassword = () => {
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [form] = Form.useForm();
 
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-  };
-
   const handleChangePassword = async ({
     oldPassword,
     newPassword,
@@ -47,12 +43,15 @@ export const NewPassword = () => {
       newPassword,
     });
     if (result && result.isOk) {
-      setIsPopupOpen(true);
       setMessage('Пароль успешно изменен');
-    } else {
       setIsPopupOpen(true);
+    } else {
       setMessage('Не удалось поменять пароль');
+      setIsPopupOpen(true);
     }
+  };
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
   };
 
   const onFinish: FormProps<RegistrationFieldType>['onFinish'] = values => {

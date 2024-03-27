@@ -2,10 +2,10 @@ import { BackgroundWrapper, Button, LinkList } from '@/components';
 import './main-page.css';
 import { setBodyScroll, setPageTitle } from '@/helpers';
 import { Col, Divider, Flex, Row } from 'antd';
-import React from 'react';
-import { Theme } from '@/helpers/constants/global';
 import { useNavigate } from 'react-router-dom';
 import Paragraph from 'antd/es/typography/Paragraph';
+import { useAppDispatch } from '@/helpers/hooks/storeHooks';
+import { setThemeDark, setThemeLight } from '@/store/userSlice';
 import { withAuthRouteHOC } from '@/helpers/hooks/withAuthRouteHOC';
 
 const MainPage = () => {
@@ -13,10 +13,7 @@ const MainPage = () => {
   setPageTitle('CatCoders');
   // На уровне layouts установлен запрет на скроллинг страницы, поэтому этот метод отменяет эти действия. MainPage - это лендинг страница.
   setBodyScroll();
-  const handleChangeTheme = (theme: Theme) => {
-    // eslint-disable-next-line no-console
-    console.log('setTheme', theme);
-  };
+  const dispatch = useAppDispatch();
   return (
     <div className='main-page'>
       <BackgroundWrapper title={'CatCoders'}>
@@ -27,12 +24,12 @@ const MainPage = () => {
                 className='main-page__button-theme'
                 darkTheme={true}
                 label='Темная тема'
-                onClick={() => handleChangeTheme(Theme.Dark)}
+                onClick={() => dispatch(setThemeDark())}
               />
               <Button
                 className='main-page__button-theme'
                 label='Светлая тема'
-                onClick={() => handleChangeTheme(Theme.Light)}
+                onClick={() => dispatch(setThemeLight())}
               />
             </Flex>
           </Col>
