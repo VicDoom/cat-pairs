@@ -1,7 +1,10 @@
 import './profile-popup.css';
 import { CloseOutlined } from '@ant-design/icons';
-import { ChangeEvent, MouseEvent, useState } from 'react';
+import { MouseEvent, useRef, useState } from 'react';
 import { UserService } from '@/services/user';
+import { useNotification } from '@/providers/notification-provider';
+
+const DEFAULT_NAME_FILE = 'Выберите файл';
 
 interface ProfilePopupProps {
   isPopupOpen: boolean;
@@ -14,35 +17,47 @@ export const ProfilePopup = ({
   handleClosePopup,
   handleSetAvatar,
 }: ProfilePopupProps) => {
+  const { notify } = useNotification();
+  const fileInput = useRef<HTMLInputElement>(null);
   const popupClass = `popup  ${isPopupOpen ? 'popup_opened' : ''}`;
 
   const [file, setFile] = useState<File | null>(null);
+  const [nameFile, setNameFile] = useState<string>(DEFAULT_NAME_FILE);
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (file) {
       const formData = new FormData();
       formData.append('avatar', file);
-      const result = await UserService.changeAvatar(formData);
-
-      if (result && result.isOk && result.avatar) {
-        handleSetAvatar(result.avatar);
-      }
-      handleClosePopup();
-      setFile(null);
+      new UserService()
+        .changeAvatar(formData)
+        .then(result => {
+          handleSetAvatar(result.avatar);
+          handleClosePopup();
+          setFile(null);
+        })
+        .catch(err => notify('error', err?.message));
+    } else {
+      notify('error', DEFAULT_NAME_FILE);
+      setNameFile(DEFAULT_NAME_FILE);
     }
   };
 
-  const heandleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+  const heandleOnChange = () => {
+    const files = fileInput.current?.files || [];
+    if (files.length > 0) {
+      const file = files[0];
+      setNameFile(file.name);
+      setFile(file);
     }
   };
 
   const onClose = () => {
     handleClosePopup();
     setFile(null);
+    setNameFile(DEFAULT_NAME_FILE);
   };
+
   return (
     <div className={popupClass}>
       <div className='popup__form-container'>
@@ -62,9 +77,10 @@ export const ProfilePopup = ({
               id='fileInput'
               className=''
               type='file'
-              onChange={e => heandleOnChange(e)}
+              ref={fileInput}
+              onChange={() => heandleOnChange()}
             />
-            <span className='popup__form-button-choose'>Выберите файл</span>
+            <span className='popup__form-button-choose'>{nameFile}</span>
           </label>
           <button
             className='popup__form-button'

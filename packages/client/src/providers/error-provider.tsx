@@ -32,7 +32,6 @@ export class ErrorProvider extends React.Component<
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     } else {
-      // eslint-disable-next-line no-console
       console.error(error, errorInfo);
     }
   }

@@ -4,9 +4,9 @@ const { POSTGRES_HOST } = process.env;
 
 const sequelizeOptions: SequelizeOptions = {
   host: POSTGRES_HOST,
-  port: 5433,
+  port: 5432,
   username: 'postgres',
-  password: '625002',
+  password: '111111',
   database: 'forum_cat_pairs',
   dialect: 'postgres',
   models: [__dirname + '/models'],

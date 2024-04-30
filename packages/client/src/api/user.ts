@@ -1,27 +1,24 @@
-import { fetchHelper, getString, setHeaders } from '@/helpers';
-import { DataChangePassword, ProfileFieldType } from '@/helpers/types/user';
+import {
+  DataChangePassword,
+  ProfileFieldType,
+  User,
+} from '@/helpers/types/user';
+import { BaseApi } from '@/api/base';
 
-export class UserApi {
-  static async changePassword(params: DataChangePassword) {
-    return await fetchHelper('/user/password', {
+export class UserApi extends BaseApi {
+  changePassword(params: DataChangePassword) {
+    return this.put('/user/password', params);
+  }
+
+  changeAvatar(formData: FormData) {
+    return this.fetch<User>('/user/profile/avatar', {
       method: 'PUT',
-      body: getString(params),
-      headers: setHeaders('application/json'),
+      body: formData,
+      headers: [],
     });
   }
 
-  static async changeAvatar(data: FormData) {
-    return fetchHelper('/user/profile/avatar', {
-      method: 'PUT',
-      body: data,
-    });
-  }
-
-  static async changeUser(params: ProfileFieldType) {
-    return fetchHelper('/user/profile', {
-      method: 'PUT',
-      body: getString(params),
-      headers: setHeaders('application/json'),
-    });
+  changeUser(params: ProfileFieldType) {
+    return this.put<User>('/user/profile', params);
   }
 }

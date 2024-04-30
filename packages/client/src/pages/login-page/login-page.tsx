@@ -6,18 +6,17 @@ import {
   PageWrapper,
 } from '@/components';
 import { AuthService } from '@/services';
-import { Flex, Form, FormProps, notification } from 'antd';
+import { Flex, Form, FormProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import './login-page.css';
 import {
   setPageTitle,
   validateLogin,
   validatePassword,
   validateRequired,
 } from '@/helpers';
-import { useAuth } from '@/helpers/hooks/useAuth';
 import { redirectToUrl } from '@/helpers/redirect-helper';
-import { OAUTH_REDIRECT_URI } from '@/helpers/constants/api';
+import { HOST, REDIRECT_TO_LOGIN } from '@/helpers/constants/api';
+import { useNotification } from '@/providers/notification-provider';
 
 type LoginFieldType = {
   login: string;
@@ -33,46 +32,40 @@ const navigateOauth = (serviceId: string, redirectUri: string) => {
 
 export const LoginPage = () => {
   setPageTitle('Войти');
+  const { notify } = useNotification();
   const navigate = useNavigate();
-  const [notify, contextHolder] = notification.useNotification();
-  const { setAuth } = useAuth();
 
   const onOauth = async () => {
-    notify.warning({
-      message: 'Загрузка',
-      description: 'Авторизация начнется через мгновение :)',
-      className: 'notification-bar',
-    });
-    const serviceId = await AuthService.getServiceId();
-    if (!serviceId) {
-      notify.error({
-        message: 'Ошибка авторизации',
-        description:
-          'Невозможно подключиться к сервису Yandex, попробуйте чуть позже',
-        className: 'notification-bar',
+    notify('warning', 'Загрузка', 'Авторизация начнется через мгновение :)');
+    new AuthService()
+      .getServiceId()
+      .then(serviceId =>
+        navigateOauth(serviceId, `${HOST}${REDIRECT_TO_LOGIN}`)
+      )
+      .catch(err => {
+        console.error(err);
+        notify(
+          'error',
+          'Ошибка авторизации',
+          'Невозможно подключиться к сервису Yandex, попробуйте чуть позже'
+        );
       });
-      return;
-    }
-    navigateOauth(serviceId, OAUTH_REDIRECT_URI);
   };
 
   const onFinish: FormProps<LoginFieldType>['onFinish'] = async ({
     login,
     password,
   }) => {
-    const result = await AuthService.login({ login, password });
-    if (result?.isOk) {
-      setAuth?.();
-      navigate('/');
-      redirectToUrl('/');
-      return;
-    }
-    const errorMessage = `Не удалось войти: ${result?.reason}`;
-    notify.error({
-      message: 'Ошибка авторизации',
-      description: errorMessage,
-      className: 'notification-bar',
-    });
+    new AuthService()
+      .login({ login, password })
+      .then(() => redirectToUrl('/'))
+      .catch(err => {
+        notify(
+          'error',
+          'Ошибка авторизации',
+          `Не удалось войти: ${err?.message}`
+        );
+      });
   };
 
   return (
@@ -118,13 +111,12 @@ export const LoginPage = () => {
                     Регистрация
                   </span>
                 </div>
-                {contextHolder}
                 <Button block label='Войти' htmlType='submit' />
                 <Flex align='center' gap={8}>
                   <span>Войти с помощью: </span>
                   <IconButton
                     type='default'
-                    icon={<img src='public/yandex-icon.svg' />}
+                    icon={<img src='yandex-icon.svg' />}
                     onClick={onOauth}
                   />
                 </Flex>

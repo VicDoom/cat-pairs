@@ -37,16 +37,18 @@ export const render = async (req: ExpressRequest) => {
     },
   ] = foundRoutes;
 
-  try {
-    await fetchData({
-      dispatch: store.dispatch,
-      state: store.getState(),
-      ctx: req.headers['cookie'] || 'noCookie',
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('Инициализация страницы произошла с ошибкой', e);
+  if (fetchData) {
+    try {
+      await fetchData({
+        dispatch: store.dispatch,
+        state: store.getState(),
+        ctx: req.headers['cookie'] || 'noCookie',
+      });
+    } catch (e) {
+      console.error('Инициализация страницы произошла с ошибкой', e);
+    }
   }
+
   const staticRouter = createStaticRouter(dataRoutes, context);
 
   return {

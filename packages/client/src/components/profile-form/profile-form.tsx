@@ -10,33 +10,27 @@ import {
   validateSecondName,
 } from '@/helpers';
 import { Input } from '@/components';
-import { useAppDispatch, useAppSelector } from '../../helpers/hooks/storeHooks';
+import { useAppDispatch, useAppSelector } from '@/helpers/hooks/storeHooks';
 import { fetchChangeCurrentUser } from '@/store/userSlice';
 import { ProfileFieldType } from '@/helpers/types/user';
-import { notification } from 'antd';
+import { useNotification } from '@/providers/notification-provider';
 
 export const ProfileForm = () => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(state => state.user.currentUser);
   const error = useAppSelector(state => state.user.error);
-  const [notify, contextHolder] = notification.useNotification();
+  const { notify } = useNotification();
   const onFinish: FormProps<ProfileFieldType>['onFinish'] = data => {
     dispatch(fetchChangeCurrentUser(data));
     if (error) {
-      const errorMessage = `Не удалось заменить данные  пользователя: ${error}`;
-      notify.error({
-        message: 'Ошибка авторизации',
-        description: errorMessage,
-        className: 'notification-bar',
-      });
+      notify(
+        'error',
+        'Ошибка авторизации',
+        `Не удалось заменить данные пользователя: ${error}`
+      );
       return;
     }
-    const message = 'Данные пользователя успешно изменены';
-    notify.success({
-      description: message,
-      className: 'notification-bar',
-      message: undefined,
-    });
+    notify('success', undefined, 'Данные пользователя успешно изменены');
   };
 
   return (
@@ -110,7 +104,6 @@ export const ProfileForm = () => {
         </div>
         <Button htmlType='submit' label={'Редактировать'} />
       </Form>
-      {contextHolder}
     </>
   );
 };

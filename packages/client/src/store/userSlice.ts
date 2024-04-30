@@ -4,6 +4,7 @@ import { UserService } from '@/services/user';
 import { Theme } from '@/helpers/constants/global';
 import { userNotAutn } from '@/helpers/constants/store';
 import { RootState } from '@/store';
+import { AuthService } from '@/services';
 
 type CatPairsState = {
   currentUser: User;
@@ -17,23 +18,18 @@ const initialState: CatPairsState = {
   theme: Theme.Light,
 };
 
-export interface IUserService {
-  getCurrentUser(): Promise<User | undefined>;
-}
-
-const abortController = new AbortController();
 export const fetchGetCurrentUser = createAsyncThunk<
   string | User | undefined,
   undefined,
   { rejectValue: string }
 >('user/fetchGetCurrentUser', async (_, thinkApi) => {
-  const result = await UserService.getCurrentUser({
-    signal: abortController.signal,
-  });
-  if (result?.isOk) {
-    return result?.user;
+  try {
+    return await new AuthService().getCurrentUser();
+  } catch (e) {
+    return thinkApi.rejectWithValue(
+      e instanceof Error ? e.message : 'Unknown error'
+    );
   }
-  return result?.error && thinkApi.rejectWithValue(result?.error);
 });
 
 export const fetchGetCurrentUserServer = createAsyncThunk<
@@ -41,25 +37,22 @@ export const fetchGetCurrentUserServer = createAsyncThunk<
   string,
   { rejectValue: string }
 >('user/fetchGetCurrentUserServer', async (ctx, { rejectWithValue }) => {
-  const result = await UserService.getCurrentUserWhithCookie(
-    { signal: abortController.signal },
-    ctx
-  );
-  if (result?.isOk) {
-    return result?.user;
+  try {
+    return await new AuthService().getCurrentUserWithCookie(ctx);
+  } catch (e) {
+    return rejectWithValue(e instanceof Error ? e.message : 'Unknown error');
   }
-  return result?.error && rejectWithValue(result?.error);
 });
 export const fetchChangeCurrentUser = createAsyncThunk<
   string | User | undefined,
   ProfileFieldType,
   { rejectValue: string }
 >('user/fetchChangeCurrentUser', async (params, { rejectWithValue }) => {
-  const result = await UserService.changeUser(params);
-  if (result?.isOk) {
-    return result?.user;
+  try {
+    return await new UserService().changeUser(params);
+  } catch (e) {
+    return rejectWithValue(e instanceof Error ? e.message : 'Unknown error');
   }
-  return result?.error && rejectWithValue(result?.error);
 });
 
 const userSlice = createSlice({

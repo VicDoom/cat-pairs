@@ -1,19 +1,17 @@
-import { notification } from 'antd';
-import { UserService } from '@/services/user';
 import React, { createContext, useEffect, useRef, useState } from 'react';
 import { AuthService } from '@/services';
 import { redirectToUrl } from '@/helpers/redirect-helper';
+import { useNotification } from '@/providers/notification-provider';
+import { useAppSelector } from '@/helpers/hooks/storeHooks';
 
 type AuthContextType = {
   isAuth: boolean;
-  isLoading: boolean;
   setAuth?: () => void;
   deleteAuth?: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   isAuth: false,
-  isLoading: true,
   setAuth: undefined,
   deleteAuth: undefined,
 });
@@ -24,26 +22,13 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = props => {
   const { children } = props;
-  const [isAuth, setIsAuth] = useState(false);
-  const [isLoading, setLoading] = useState(true);
+  const currentUser = useAppSelector(state => state.user.currentUser);
+  const [isAuth, setIsAuth] = useState(currentUser.id !== 0);
   const isAuthRef = useRef(false);
-  const [notify, contextHolder] = notification.useNotification();
-  const abortController = new AbortController();
-
-  const stopLoading = () => setLoading(false);
+  const { notify } = useNotification();
 
   const handleAuth = () => {
     setIsAuth(true);
-    stopLoading();
-  };
-
-  const handleNotAuth = () => {
-    stopLoading();
-    notify.error({
-      message: 'Ошибка авторизации',
-      description: 'Время авторизации истекло, пожалуйста, войдите еще раз',
-      className: 'notification-bar',
-    });
   };
 
   const deleteAuth = () => {
@@ -51,39 +36,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
   };
 
   useEffect(() => {
+    const service = new AuthService();
     if (!isAuthRef.current) {
       isAuthRef.current = true;
 
-      const handleOauth = async (code: string) => {
-        try {
-          setLoading(true);
-          const response = await AuthService.loginOauth({ code });
-          if (response?.isOk) {
+      const handleOauth = (code: string) => {
+        service
+          .loginOauth({ code })
+          .then(() => {
             handleAuth();
             redirectToUrl('/');
-          }
-          stopLoading();
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.log(e);
-        }
-      };
-
-      const fetchUser = async () => {
-        try {
-          const response = await UserService.getCurrentUser({
-            signal: abortController.signal,
-          });
-          if (response?.isOk) {
-            handleAuth();
-            return;
-          }
-          //этот stopLoading отрабатывает в случае, если response не isOk
-          handleNotAuth();
-        } catch (err) {
-          // eslint-disable-next-line no-console
-          console.log(err);
-        }
+          })
+          .catch(err => notify('error', err?.message));
       };
 
       if (typeof window !== undefined) {
@@ -93,42 +57,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = props => {
           return;
         }
       }
-
-      fetchUser();
     }
     return () => {
-      !isAuthRef.current && abortController.abort();
+      !isAuthRef.current && service.api.abortController.abort();
     };
   }, []);
-
-  useEffect(() => {
-    if (isAuth) {
-      const fetchUser = async () => {
-        try {
-          const response = await UserService.getCurrentUser({
-            signal: abortController.signal,
-          });
-        } catch (err) {
-          // eslint-disable-next-line no-console
-        }
-      };
-      fetchUser();
-    }
-    return () => {
-      !isAuthRef.current && abortController.abort();
-    };
-  }, [isAuth]);
 
   return (
     <AuthContext.Provider
       value={{
         isAuth,
-        isLoading,
         setAuth: handleAuth,
         deleteAuth,
       }}>
       {children}
-      {contextHolder}
     </AuthContext.Provider>
   );
 };

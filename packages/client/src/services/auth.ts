@@ -1,86 +1,35 @@
 import { AuthApi } from '@/api';
-import { VALID_AUTH_ERROR } from '@/helpers/constants/api';
-import { isRequestError } from '@/helpers/request';
-import {
-  GetUserRequestDto,
-  LoginRequestDto,
-  LoginRequestResult,
-} from '@/helpers/types';
-
-const successAuthData = { isOk: true, reason: '' };
+import { LoginRequestDto, RegistrationFieldDto, User } from '@/helpers/types';
 
 export class AuthService {
-  static async login(
-    props: LoginRequestDto
-  ): Promise<LoginRequestResult | undefined> {
-    try {
-      const response = await AuthApi.login(props);
-      if (response?.ok && !isRequestError(response.status)) {
-        return successAuthData;
-      }
-      // eslint-disable-next-line no-unsafe-optional-chaining
-      const { reason } = await response?.json();
-      if (reason === VALID_AUTH_ERROR) {
-        return successAuthData;
-      }
-      return { isOk: false, reason };
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
+  constructor(public readonly api: AuthApi = new AuthApi()) {}
+
+  login(props: LoginRequestDto) {
+    return this.api.login(props);
   }
 
-  static async getServiceId(): Promise<string | undefined> {
-    try {
-      const response = await AuthApi.fetchServiceId();
-      if (!response.ok) {
-        throw new Error('Error to get serviceId');
-      }
-      const { service_id } = await response.json();
-      return service_id;
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
-    }
+  registration(props: RegistrationFieldDto) {
+    return this.api.registration(props);
   }
 
-  static async loginOauth({
-    code,
-  }: {
-    code: string;
-  }): Promise<LoginRequestResult | undefined> {
-    try {
-      const responseAuth = await AuthApi.loginOauth({ code });
-      if (responseAuth.ok && !isRequestError(responseAuth.status)) {
-        return successAuthData;
-      }
-      const { reason } = await responseAuth.json();
-      if (reason === VALID_AUTH_ERROR) {
-        return successAuthData;
-      }
-      return { isOk: false, reason: reason };
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
+  async getServiceId(): Promise<string> {
+    const { service_id } = await this.api.fetchServiceId();
+    return service_id;
   }
 
-  static async getUser(props: GetUserRequestDto): Promise<boolean> {
-    const response = await AuthApi.fetchUser(props);
-    return response?.ok ?? false;
+  loginOauth({ code }: { code: string }) {
+    return this.api.loginOauth({ code });
   }
 
-  static async logout(): Promise<LoginRequestResult | undefined> {
-    try {
-      const response = await AuthApi.logout();
-      if (response.ok && !isRequestError(response.status)) {
-        return { isOk: true, reason: '' };
-      }
-      const error = await response.json();
-      return { isOk: false, reason: error.reason };
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
+  getCurrentUser(): Promise<User> {
+    return this.api.fetchUser();
+  }
+
+  getCurrentUserWithCookie(ctx: string): Promise<User> {
+    return this.api.getUserWithCookie(ctx);
+  }
+
+  logout() {
+    return this.api.logout();
   }
 }

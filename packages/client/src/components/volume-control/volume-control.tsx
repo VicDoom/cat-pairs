@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MutedOutlined, SoundOutlined } from '@ant-design/icons';
 import './volume-control.css';
+import { localStorageGetItem, localStorageSetItem } from '@/helpers';
 
 interface VolumeControlProps {
   src: string;
@@ -9,18 +10,18 @@ interface VolumeControlProps {
 export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [muted, setMuted] = useState<boolean>(() => {
-    const storedMuted = localStorage.getItem('muted');
-    return storedMuted ? JSON.parse(storedMuted) : false;
+    const storedMuted = localStorageGetItem('muted');
+    return storedMuted ? JSON.parse(storedMuted) : true;
   });
   const [volume, setVolume] = useState(() => {
-    const storedVolume = localStorage.getItem('volume');
+    const storedVolume = localStorageGetItem('volume');
     return storedVolume ? parseFloat(storedVolume) : 0.5;
   });
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('muted', JSON.stringify(muted));
-    localStorage.setItem('volume', volume.toString());
+    localStorageSetItem('muted', JSON.stringify(muted));
+    localStorageSetItem('volume', volume.toString());
     if (audioRef.current) {
       audioRef.current.muted = muted;
       audioRef.current.volume = volume;

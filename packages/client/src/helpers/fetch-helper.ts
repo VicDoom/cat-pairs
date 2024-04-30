@@ -1,4 +1,4 @@
-import { YANDEX_API_HOST, YANDEX_API_HOST_REDIRECT } from './constants/api';
+import { HOST } from './constants/api';
 
 export interface FetchHelperParams {
   body?: string | FormData;
@@ -25,15 +25,22 @@ export const getString = (object: object) => {
 };
 
 export const fetchHelper = (url: string, options: FetchHelperParams) => {
-  return fetch(`${YANDEX_API_HOST_REDIRECT}/${url}`, {
+  return fetch(`${HOST}/api/v2${url}`, {
     ...options,
     credentials: 'include',
   });
 };
 
-export const fetchHelperServer = (url: string, options: FetchHelperParams) => {
-  return fetch(`${YANDEX_API_HOST}${url}`, {
-    ...options,
-    credentials: 'include',
-  });
-};
+export class FetchError extends Error {
+  statusCode: number;
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(message: string, statusCode: number, data: any) {
+    super(message);
+    this.statusCode = statusCode;
+    this.data = data;
+    Object.setPrototypeOf(this, FetchError.prototype);
+  }
+}

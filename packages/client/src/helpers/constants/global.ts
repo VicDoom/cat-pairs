@@ -10,15 +10,15 @@ export const enum Theme {
   Light = 'light',
 }
 
-export const THEME_ANTD: ThemeConfig = {
+export const THEME_ANTD_LIGHT: ThemeConfig = {
   token: {
     colorPrimary: Color.Light,
     colorText: Color.Light,
     colorIcon: Color.Dark,
-    colorLink: Color.Light,
+    colorLink: Color.Dark,
     linkDecoration: 'underline',
-    colorLinkActive: Color.Light,
-    colorLinkHover: Color.Light,
+    colorLinkActive: Color.Dark,
+    colorLinkHover: Color.Dark,
   },
   components: {
     Typography: {
@@ -32,10 +32,10 @@ export const THEME_ANTD_DARK: ThemeConfig = {
     colorPrimary: Color.Dark,
     colorText: Color.Dark,
     colorIcon: Color.Light,
-    colorLink: Color.Dark,
+    colorLink: Color.Light,
     linkDecoration: 'underline',
-    colorLinkActive: Color.Dark,
-    colorLinkHover: Color.Dark,
+    colorLinkActive: Color.Light,
+    colorLinkHover: Color.Light,
   },
   components: {
     Typography: {

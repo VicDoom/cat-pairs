@@ -1,71 +1,75 @@
+import { setHeadersWithCookie } from '@/helpers';
 import {
-  fetchHelper,
-  getString,
-  setHeaders,
-  setHeadersWithCookie,
-} from '@/helpers';
-import { fetchHelperServer } from '@/helpers/fetch-helper';
-import {
-  GetUserRequestDto,
+  DefaultResult,
   LoginOauthRequestDto,
   LoginRequestDto,
+  RegistrationFieldDto,
 } from '@/helpers/types/api';
-import { OAUTH_REDIRECT_URI } from '@/helpers/constants/api';
+import {
+  HOST,
+  REDIRECT_TO_LOGIN,
+  VALID_AUTH_ERROR,
+} from '@/helpers/constants/api';
+import { BaseApi } from '@/api/base';
+import { User } from '@/helpers/types';
+import { FetchError } from '@/helpers/fetch-helper';
 
-export class AuthApi {
-  static login(params: LoginRequestDto) {
-    return fetchHelper('/auth/signin', {
-      method: 'POST',
-      body: getString(params),
-      headers: setHeaders('application/json'),
-    });
-  }
-
-  static fetchServiceId() {
-    return fetchHelper(
-      `/oauth/yandex/service-id?redirect_uri=${OAUTH_REDIRECT_URI}`,
-      {
-        method: 'GET',
-        headers: setHeaders('application/json'),
+export class AuthApi extends BaseApi {
+  async login(params: LoginRequestDto): Promise<true | never> {
+    try {
+      await this.post<DefaultResult>('/auth/signin', params);
+      return true;
+    } catch (e) {
+      if (e instanceof FetchError && e?.data?.reason === VALID_AUTH_ERROR) {
+        console.info(e?.data?.reason);
+        return true;
+      } else {
+        throw new Error(e instanceof Error ? e.message : 'Unknown error');
       }
-    );
+    }
   }
 
-  static loginOauth({ code }: LoginOauthRequestDto) {
-    return fetchHelper('/oauth/yandex', {
-      method: 'POST',
-      body: getString({ code, redirect_uri: OAUTH_REDIRECT_URI }),
-      headers: setHeaders('application/json'),
+  async registration(params: RegistrationFieldDto): Promise<User> {
+    try {
+      return await this.post<User>('/auth/signup', params);
+    } catch (e) {
+      if (
+        e instanceof FetchError &&
+        e.statusCode >= 400 &&
+        e.statusCode < 500
+      ) {
+        throw new Error(e?.data?.reason);
+      } else {
+        throw new Error(e instanceof Error ? e.message : 'Unknown error');
+      }
+    }
+  }
+
+  fetchServiceId() {
+    return this.get<{ service_id: string }>('/oauth/yandex/service-id', {
+      redirect_uri: `${HOST}${REDIRECT_TO_LOGIN}`,
     });
   }
 
-  static fetchUser({ signal }: GetUserRequestDto) {
-    return fetchHelper('/auth/user', {
-      method: 'GET',
-      signal,
-      headers: setHeaders('application/json'),
+  loginOauth({ code }: LoginOauthRequestDto) {
+    return this.post('/oauth/yandex', {
+      code,
+      redirect_uri: `${HOST}${REDIRECT_TO_LOGIN}`,
     });
   }
 
-  static getUserProxy({ signal }: GetUserRequestDto) {
-    return fetchHelper('/auth/user', {
-      method: 'GET',
-      signal,
-      headers: setHeaders('application/json'),
-    });
+  fetchUser() {
+    return this.get<User>('/auth/user');
   }
 
-  static getUserWhithCookie({ signal }: GetUserRequestDto, ctx: string) {
-    return fetchHelperServer('/auth/user', {
+  getUserWithCookie(ctx: string) {
+    return this.fetch<User>('/auth/user', {
       method: 'GET',
-      signal,
       headers: setHeadersWithCookie('application/json', ctx),
     });
   }
 
-  static logout() {
-    return fetchHelper('/auth/logout', {
-      method: 'POST',
-    });
+  logout() {
+    return this.post<DefaultResult>('/auth/logout');
   }
 }

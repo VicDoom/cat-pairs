@@ -1,18 +1,5 @@
-export const YANDEX_API_HOST = 'https://ya-praktikum.tech/api/v2';
-export const YANDEX_API_HOST_REDIRECT = 'http://localhost:3000/api/v2';
-export const OAUTH_REDIRECT_URI = 'http://localhost:3000';
-
-export const API_PARAMS = {
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',
-};
-
-export const API_PARAMS_FORMDATA = {
-  credentials: 'include',
-};
-
+export const HOST = 'http://localhost:3000';
+export const REDIRECT_TO_LOGIN = '/login';
+export const PREFIX_RESOURCES = '/api/v2/resources';
 export const VALID_AUTH_ERROR = 'User already in system';
-
 export const SCORE_CAT_CODERS = 'scoreCatCoders';

@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import './exit-button.css';
 import { Color } from '@/helpers/constants/global';
 import { AuthService } from '@/services/auth';
-import { MessagePopup } from '../message-popup';
+import { MessagePopup } from '@/components';
 import { deleteCurrentUser } from '@/store/userSlice';
 import { useAppDispatch } from '@/helpers/hooks/storeHooks';
 import { useState } from 'react';
 import React from 'react';
 import { useAuth } from '@/helpers/hooks/useAuth';
+import { REDIRECT_TO_LOGIN } from '@/helpers/constants/api';
 
 interface ExitButtonProps extends JSX.IntrinsicAttributes {
   onClick?: () => void;
@@ -30,14 +31,17 @@ export const ExitButton: React.FC<ExitButtonProps> = props => {
   };
 
   const handleExit = async () => {
-    const result = await AuthService.logout();
-    if (result?.isOk) {
-      dispatch(deleteCurrentUser());
-      deleteAuth?.();
-      navigate('/login');
-      return;
-    }
-    handleOpenPopup();
+    new AuthService()
+      .logout()
+      .then(() => {
+        dispatch(deleteCurrentUser());
+        deleteAuth?.();
+        navigate(REDIRECT_TO_LOGIN);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => handleOpenPopup());
   };
   return (
     <>

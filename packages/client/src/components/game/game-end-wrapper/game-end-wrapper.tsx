@@ -1,7 +1,6 @@
 import './game-end-wrapper.css';
 import { Button } from '@/components/button';
 import { LeaderboardService } from '@/services/leaderboard';
-import { SCORE_CAT_CODERS, YANDEX_API_HOST } from '@/helpers/constants/api';
 import { useAppSelector } from '@/helpers/hooks/storeHooks';
 import { useEffect } from 'react';
 
@@ -20,20 +19,17 @@ export const GameEndWrapper = ({
   handleClick,
   score,
 }: GameEndWrapperProps) => {
-  const userName = useAppSelector(state => state.user.currentUser.first_name);
-  const userAvatar = useAppSelector(state => state.user.currentUser.avatar);
+  const currentUser = useAppSelector(state => state.user.currentUser);
 
   useEffect(() => {
-    if (score) {
-      LeaderboardService.addUser({
-        data: {
-          name: userName,
-          avatar: userAvatar ? `${YANDEX_API_HOST}/resources${userAvatar}` : '',
-          scoreCatCoders: Number(score),
-        },
-        ratingFieldName: SCORE_CAT_CODERS,
-      });
-    }
+    if (!score) return;
+    const service = new LeaderboardService();
+    service.addUser({
+      name: currentUser.first_name,
+      avatar: currentUser.avatar,
+      scoreCatCoders: Number(score),
+    });
+    return () => service.api.abortController.abort();
   }, [score]);
 
   return (

@@ -1,6 +1,13 @@
-import { typeWithSignal } from '.';
-
 export type LoginRequestDto = {
+  login: string;
+  password: string;
+};
+
+export type RegistrationFieldDto = {
+  first_name: string;
+  second_name: string;
+  email: string;
+  phone: string;
   login: string;
   password: string;
 };
@@ -12,9 +19,6 @@ export type LoginOauthDto = {
 
 export type LoginOauthRequestDto = Pick<LoginOauthDto, 'code'>;
 
-export type LoginRequestResult = {
-  isOk: boolean;
+export interface DefaultResult {
   reason: string;
-};
-
-export type GetUserRequestDto = typeWithSignal<unknown>;
+}

@@ -1,6 +1,7 @@
 import * as Pages from '@/pages';
 import { AppDispatch, RootState } from './store';
 import * as init from '@/helpers/pagesInit';
+import { REDIRECT_TO_LOGIN } from '@/helpers/constants/api';
 
 export type PageInitArgs = {
   dispatch: AppDispatch;
@@ -18,17 +19,15 @@ export const routes = [
   {
     path: '/game',
     element: <Pages.GamePage />,
-    fetchData: init.initGamePage,
+    fetchData: init.initProfilePage,
   },
   {
-    path: '/login',
+    path: REDIRECT_TO_LOGIN,
     element: <Pages.LoginPage />,
-    fetchData: init.initLoginPage,
   },
   {
     path: '/registration',
     element: <Pages.RegistrationPage />,
-    fetchData: init.initRegistrationPage,
   },
   {
     path: '/profile',
@@ -38,26 +37,25 @@ export const routes = [
   {
     path: '/change-password',
     element: <Pages.NewPassword />,
-    fetchData: init.initNewPasswordPage,
+    fetchData: init.initProfilePage,
   },
   {
     path: '/leaderboard',
     element: <Pages.LeaderboardPage />,
-    fetchData: init.initLeaderboardPage,
+    fetchData: init.initProfilePage,
   },
   {
     path: '/forum',
     element: <Pages.ForumPage />,
-    fetchData: init.initForumPagePage,
+    fetchData: init.initProfilePage,
   },
   {
     path: '/forum/:id',
     element: <Pages.ForumTopicPage />,
-    fetchData: init.initForumTopicPage,
+    fetchData: init.initProfilePage,
   },
   {
     path: '*',
     element: <Pages.Page404 />,
-    fetchData: init.initPage404,
   },
 ];

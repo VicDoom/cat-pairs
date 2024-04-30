@@ -14,20 +14,20 @@ export const LeaderboardPage = () => {
     useState<LeaderboardTeamRequestResult | null>(null);
 
   useEffect(() => {
+    const service = new LeaderboardService();
     const fetchLeaderboard = async ({
       ratingFieldName,
       cursor,
       limit,
     }: LeaderboardRequest) => {
-      const result = await LeaderboardService.getTeamLeaderboard({
-        ratingFieldName,
-        cursor,
-        limit,
-      });
-
-      if (result) {
-        setLeadersList(result);
-      }
+      service
+        .getTeamLeaderboard({
+          ratingFieldName,
+          cursor,
+          limit,
+        })
+        .then(data => setLeadersList(data))
+        .catch(err => console.warn(err));
     };
 
     fetchLeaderboard({
@@ -35,6 +35,8 @@ export const LeaderboardPage = () => {
       cursor: 0,
       limit: 6,
     });
+
+    return () => service.api.abortController.abort();
   }, []);
 
   setPageTitle('Таблица лидеров');

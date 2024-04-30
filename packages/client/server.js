@@ -45,7 +45,7 @@ async function createServer() {
     app.use(base, sirv('./dist/client', { extensions: [] }));
   }
 
-  app.use('*', cookieParser(), async (req, res) => {
+  app.use('*', async (req, res) => {
     try {
       const url = req.originalUrl.replace(base, '');
 
@@ -71,14 +71,12 @@ async function createServer() {
       res.status(200).set({ 'Content-Type': 'text/html' }).send(html);
     } catch (e) {
       vite?.ssrFixStacktrace(e);
-      // eslint-disable-next-line no-console
       console.log(e.stack);
       res.status(500).end(e.stack);
     }
   });
 
   app.listen(port, () => {
-    // eslint-disable-next-line no-console
     console.log(`Client is listening on port: ${port}`);
   });
 

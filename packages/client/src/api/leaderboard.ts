@@ -1,23 +1,17 @@
-import { fetchHelper, getString, setHeaders } from '@/helpers';
 import {
   LeaderboardNewLeaderRequest,
   LeaderboardRequest,
+  LeaderboardTeamRequestResult,
 } from '@/helpers/types/leaderboard';
+import { BaseApi } from '@/api/base';
+import { DefaultResult } from '@/helpers/types';
 
-export class LeaderboardApi {
-  static addUser(params: LeaderboardNewLeaderRequest) {
-    return fetchHelper('/leaderboard', {
-      method: 'POST',
-      body: getString(params),
-      headers: setHeaders('application/json'),
-    });
+export class LeaderboardApi extends BaseApi {
+  addUser(params: LeaderboardNewLeaderRequest) {
+    return this.post<DefaultResult>('/leaderboard', params);
   }
 
-  static getTeamLeaderboard(params: LeaderboardRequest) {
-    return fetchHelper('/leaderboard/all', {
-      method: 'POST',
-      body: getString(params),
-      headers: setHeaders('application/json'),
-    });
+  getTeamLeaderboard(params: LeaderboardRequest) {
+    return this.post<LeaderboardTeamRequestResult>('/leaderboard/all', params);
   }
 }
