@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { setPageTitle } from '@/helpers/helper';
 import { PageWrapper } from '@/components';
 import { ForumTopicsList } from '@/components';
@@ -6,34 +8,46 @@ import { ExitButton } from '@/components';
 import { withAuthRouteHOC } from '@/helpers/hooks/withAuthRouteHOC';
 
 const ForumPage = () => {
-  setPageTitle('Форум');
-  //тестовый запрос
-  const handleTestCreateTopic = async () => {
-    const response = await fetch(
-      'http://localhost:3001/api/server/topic/create',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJOYW1lIjoidGVzdDIwIiwiaWF0IjoxNzE0Nzk3MDkzLCJleHAiOjE3MTQ4ODM0OTN9.To_WYDVb0fP3aHfm0wLTvqZmpqMCq5Ky72xRfO5u53g',
-        },
-        body: JSON.stringify({
-          topicName: 'тестовая тема',
-          description: 'описание тестовой темы',
-        }),
-      }
-    );
+  // const [isAuthorized, setIsAuthorized] = useState(false);
+  const navigate = useNavigate();
+  // const forumAuthToken = localStorage.getItem('forumAuthToken');
+  const [forumTopicsList, setForumTopicsList] = useState(null);
 
-    const result = await response.json();
-    console.log(result);
-  };
+  useEffect(() => {
+    // if (!isAuthorized) {
+    //   navigate('/forum/login');
+    // }
+    const fetchForumTopics = async () => {
+      const forumAuthToken = localStorage.getItem('forumAuthToken') || '';
+      const response = await fetch(
+        'http://localhost:3001/api/server/topic/getAll',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${encodeURIComponent(forumAuthToken)}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.status === 403) {
+        navigate('/forum/login');
+      }
+      console.log(response.status);
+      console.log(result);
+      setForumTopicsList(result);
+    };
+
+    fetchForumTopics();
+  }, []);
+
+  setPageTitle('Форум');
 
   return (
     <PageWrapper>
       <>
-        <button onClick={handleTestCreateTopic}>создать тему</button>
-        <ForumTopicsList list={FORUM_TOPICS_LIST} />
+        {forumTopicsList && <ForumTopicsList list={forumTopicsList} />}
         <ExitButton />
       </>
     </PageWrapper>

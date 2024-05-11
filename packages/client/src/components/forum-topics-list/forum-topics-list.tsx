@@ -7,8 +7,8 @@ import './forum-topics-list.css';
 
 interface ForumTopic {
   id: number;
-  title: string;
-  messages: string;
+  topicName: string;
+  // messages: string;
 }
 
 interface ForumTopicsListProps {
@@ -30,8 +30,39 @@ export const ForumTopicsList = ({
     setIsModalOpen(false);
   };
 
+  //тестовый запрос
+  const handleTestCreateTopic = async () => {
+    const forumAuthToken = localStorage.getItem('forumAuthToken') || '';
+    const response = await fetch(
+      'http://localhost:3001/api/server/topic/create',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Authorization:
+          //   'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsInVzZXJOYW1lIjoidGVzdDIwIiwiaWF0IjoxNzE0Nzk3MDkzLCJleHAiOjE3MTQ4ODM0OTN9.To_WYDVb0fP3aHfm0wLTvqZmpqMCq5Ky72xRfO5u53g',
+          Authorization: `Bearer ${encodeURIComponent(forumAuthToken)}`,
+        },
+        body: JSON.stringify({
+          userId: 1,
+          topicName: 'тестовая тема',
+          description: 'описание тестовой темы',
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (response.status === 403) {
+      navigate('/forum/login');
+    }
+    console.log(response.status);
+    console.log(result);
+  };
+
   return (
     <Flex className='forum-topics-list' justify='center'>
+      <button onClick={handleTestCreateTopic}>создать тему</button>
       <table className='forum-topics-list__table'>
         <thead>
           <tr>
@@ -40,14 +71,14 @@ export const ForumTopicsList = ({
           </tr>
         </thead>
         <tbody>
-          {list.map(({ id, title, messages }) => (
-            <tr key={id}>
+          {list.map(item => (
+            <tr key={item.id}>
               <td>
                 <Flex
                   className='forum-topics-list__item-title'
                   align='center'
-                  onClick={() => navigate(`/forum/${id}`)}>
-                  {title}
+                  onClick={() => navigate(`/forum/${item.id}`)}>
+                  {item.topicName}
                 </Flex>
               </td>
               <td>
@@ -55,7 +86,7 @@ export const ForumTopicsList = ({
                   className='forum-topics-list__item-messages-count'
                   align='center'
                   justify='center'>
-                  {messages}
+                  123
                 </Flex>
               </td>
             </tr>

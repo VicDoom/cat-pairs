@@ -55,6 +55,16 @@ export const routes = [
     fetchData: init.initProfilePage,
   },
   {
+    path: '/forum/registration',
+    element: <Pages.ForumRegistrationPage />,
+    fetchData: init.initProfilePage,
+  },
+  {
+    path: '/forum/login',
+    element: <Pages.ForumLoginPage />,
+    fetchData: init.initProfilePage,
+  },
+  {
     path: '*',
     element: <Pages.Page404 />,
   },

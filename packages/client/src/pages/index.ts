@@ -1,5 +1,7 @@
 export { GamePage } from './game-page';
 export { MainPage } from './main-page';
+export { ForumRegistrationPage } from './forum-registration-page';
+export { ForumLoginPage } from './forum-login-page';
 export { ForumPage } from './forum-page';
 export { ForumTopicPage } from './forum-topic-page';
 export { LoginPage } from './login-page';

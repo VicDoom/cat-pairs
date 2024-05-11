@@ -17,6 +17,8 @@ export { ErrorContainer } from './error-container';
 export { Input } from './input';
 export { AuthWrapper } from './auth-wrapper';
 export { Button } from './button';
+export { ForumRegistration } from './forum-registration';
+export { ForumLogin } from './forum-login';
 export { ForumTopicsList } from './forum-topics-list';
 export { ForumTopic } from './forum-topic';
 export { ForumTopicFeedItem } from './forum-topic-feed-item';
