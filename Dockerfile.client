@@ -1,10 +1,12 @@
 ARG NODE_VERSION=20.11.0
-ARG CLIENT_HOST
-ARG SERVER_HOST
 
 FROM node:$NODE_VERSION-buster as production
 
+ARG CLIENT_HOST
+
 WORKDIR /app
+
+RUN echo $CLIENT_HOST
 
 COPY package.json yarn.lock ./
 

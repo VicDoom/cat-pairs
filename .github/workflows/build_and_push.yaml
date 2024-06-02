@@ -20,3 +20,13 @@ jobs:
           registry: cr.yandex
           username: oauth
           password: ${{ secrets.YA_TOKEN_REGISTRY }}
+
+      - name: Build and push client image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.client
+          push: true
+          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/client:${{ github.ref_name }}
+          build-args: |
+            CLIENT_HOST=${{ vars.CLIENT_HOST }}
