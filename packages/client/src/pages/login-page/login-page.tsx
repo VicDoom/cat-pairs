@@ -76,7 +76,7 @@ export const LoginPage = () => {
   return (
     <PageWrapper withMenu={false}>
       <div className='container-vertical-center'>
-        <AuthWrapper darkTheme={theme === Theme.Dark} label='Вход'>
+        <AuthWrapper darkTheme={theme === Theme.Dark} label='- Вход -'>
           <Form
             name='basic'
             layout='horizontal'

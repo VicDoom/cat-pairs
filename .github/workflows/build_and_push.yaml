@@ -14,30 +14,30 @@ jobs:
       - name: Подключение репозитория
         uses: actions/checkout@v2
 
-#      - name: Авторизация в реестре докер-контейнеров
-#        uses: docker/login-action@v3
-#        with:
-#          registry: cr.yandex
-#          username: oauth
-#          password: ${{ secrets.YA_TOKEN_REGISTRY }}
-#
-#      - name: Сборка и отправка образа приложения "client"
-#        uses: docker/build-push-action@v4
-#        with:
-#          context: .
-#          file: Dockerfile.client
-#          push: true
-#          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.event.repository.name }}/client:prod
-#          build-args: |
-#            CLIENT_HOST=${{ vars.CLIENT_HOST }}
-#
-#      - name: Сборка и отправка образа приложения "server"
-#        uses: docker/build-push-action@v4
-#        with:
-#          context: .
-#          file: Dockerfile.server
-#          push: true
-#          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.event.repository.name }}/server:prod
+      - name: Авторизация в реестре докер-контейнеров
+        uses: docker/login-action@v3
+        with:
+          registry: cr.yandex
+          username: oauth
+          password: ${{ secrets.YA_TOKEN_REGISTRY }}
+
+      - name: Сборка и отправка образа приложения "client"
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.client
+          push: true
+          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.event.repository.name }}/client:prod
+          build-args: |
+            CLIENT_HOST=${{ vars.CLIENT_HOST }}
+
+      - name: Сборка и отправка образа приложения "server"
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.server
+          push: true
+          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.event.repository.name }}/server:prod
 
   deploy:
     needs: build-and-push
