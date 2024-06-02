@@ -21,7 +21,7 @@ services:
     image: cr.yandex/${ID_REGISTRY}/cat-pairs/server:${TAG}
     restart: always
     ports:
-      - '3001:3001'
+      - '3001:${SERVER_PORT}'
     environment:
       SERVER_PORT: ${SERVER_PORT}
       POSTGRES_HOST: ${POSTGRES_HOST}
