@@ -27,6 +27,6 @@ jobs:
           context: .
           file: Dockerfile.client
           push: true
-          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/client:prod
+          tags: cr.yandex/${{ vars.ID_REGISTRY }}/${{ github.event.repository.name }}/client:prod
           build-args: |
             CLIENT_HOST=${{ vars.CLIENT_HOST }}
