@@ -64,3 +64,27 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: docker-compose-prod.yml
           target: /home/admin
+
+      - name:  Получение образов и их запуск
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          CLIENT_HOST: ${{ vars.CLIENT_HOST }}
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          SERVER_PORT: ${{ vars.SERVER_PORT }}
+          POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+          TAG: prod
+          ID_REGISTRY: ${{ vars.ID_REGISTRY }}
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: CLIENT_HOST,SERVER_HOST,SERVER_PORT,POSTGRES_HOST,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,PGADMIN_EMAIL,PGADMIN_PASSWORD,TAG,ID_REGISTRY
+          script: |
+            docker login --username oauth --password ${{ secrets.YA_TOKEN_REGISTRY }} cr.yandex
+            docker compose -f /home/admin/docker-compose-prod.yml pull
+            docker image prune -f
+            docker compose -f /home/admin/docker-compose-prod.yml -p ${{ github.event.repository.name }} up -d
