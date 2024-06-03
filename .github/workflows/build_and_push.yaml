@@ -77,13 +77,12 @@ jobs:
           POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
           TAG: prod
-          NODE_ENV: production
           ID_REGISTRY: ${{ vars.ID_REGISTRY }}
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          envs: CLIENT_HOST,SERVER_HOST,SERVER_PORT,POSTGRES_HOST,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,PGADMIN_EMAIL,PGADMIN_PASSWORD,TAG,ID_REGISTRY,NODE_ENV
+          envs: CLIENT_HOST,SERVER_HOST,SERVER_PORT,POSTGRES_HOST,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,PGADMIN_EMAIL,PGADMIN_PASSWORD,TAG,ID_REGISTRY
           script: |
             docker login --username oauth --password ${{ secrets.YA_TOKEN_REGISTRY }} cr.yandex
             docker compose -f /home/admin/docker-compose-prod.yml pull

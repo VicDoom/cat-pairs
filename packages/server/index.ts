@@ -16,8 +16,7 @@ const port = Number(process.env.SERVER_PORT) || 3001;
 const start = async () => {
   try {
     await sequelize.authenticate();
-    //использовать для создания и обновления таблиц в БД
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: process.env.NODE_ENV !== 'production' });
     app.listen(port, () => {
       console.log(`  ➜ 🎸 Server is listening on port: ${port}`);
     });
