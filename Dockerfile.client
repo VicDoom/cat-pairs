@@ -6,8 +6,6 @@ ARG CLIENT_HOST
 
 WORKDIR /app
 
-RUN echo $CLIENT_HOST
-
 COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile

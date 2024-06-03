@@ -3,7 +3,7 @@ name: Автодеплой
 on:
   push:
     branches:
-      - CAT-66-GROZ
+      - main
 
 jobs:
   build-and-push:
