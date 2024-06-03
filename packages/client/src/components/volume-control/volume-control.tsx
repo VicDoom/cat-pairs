@@ -11,6 +11,7 @@ interface VolumeControlProps {
 
 export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const theme = useAppSelector(state => state.user.theme);
 
   const [muted, setMuted] = useState<boolean>(() => {
@@ -24,6 +25,18 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
+    const buttonElement = buttonRef.current;
+    if (buttonElement) {
+      buttonElement.onclick = handleToggleMute;
+    }
+    return () => {
+      if (buttonElement) {
+        buttonElement.onclick = null;
+      }
+    };
+  }, [buttonRef.current]);
+
+  useEffect(() => {
     localStorageSetItem('muted', JSON.stringify(muted));
     localStorageSetItem('volume', volume.toString());
     if (audioRef.current) {
@@ -34,7 +47,11 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
 
   const handleToggleMute = () => {
     if (muted) {
-      audioRef.current?.play();
+      audioRef.current?.play().catch(error => {
+        console.error('Error attempting to play', error);
+      });
+    } else {
+      audioRef.current?.pause();
     }
     setMuted(!muted);
   };
@@ -71,10 +88,12 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
           className='volume-control__volume'
         />
       )}
-      <button onClick={handleToggleMute} className={'volume-control__button'}>
+      <button ref={buttonRef} className={'volume-control__button'}>
         {muted ? <MutedOutlined /> : <SoundOutlined />}
       </button>
-      <audio ref={audioRef} src={src} autoPlay loop></audio>
+      <audio ref={audioRef} loop className='audio-element'>
+        <source src={src}></source>
+      </audio>
     </div>
   );
 };
