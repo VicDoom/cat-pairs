@@ -1,13 +1,14 @@
 .page-wrapper {
   position: relative;
-  padding: 5% 15%;
   box-sizing: border-box;
   height: 100%;
   overflow: auto;
 }
 
 .page-wrapper__content {
-  height: 100%;
+  width: 1400px;
+  margin: 0 auto;
+  padding-bottom: 100px;
 }
 
 .page-wrapper__cat-background {

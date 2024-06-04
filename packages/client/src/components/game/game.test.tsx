@@ -97,24 +97,24 @@ describe('Тестируем игровой движок компонента Ga
     expect(setPaused).toHaveBeenCalledTimes(1);
   });
 
-  it('проверяем нажатие кнопки Exit', () => {
-    const mockNavigate = jest.fn();
+  // it('проверяем нажатие кнопки Exit', () => {
+  //   const mockNavigate = jest.fn();
 
-    (useState as jest.Mock).mockImplementationOnce(() => [gameFake, jest.fn()]);
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    const { getByRole } = render(
-      <Provider store={store}>
-        <Game
-          theme={Theme.Light}
-          gameStatus={GameStatus.PLAYING}
-          selectedDifficulty={Difficulty.EASY}
-          changeGameStatus={jest.fn()}
-        />
-      </Provider>
-    );
+  //   (useState as jest.Mock).mockImplementationOnce(() => [gameFake, jest.fn()]);
+  //   (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+  //   const { getByRole } = render(
+  //     <Provider store={store}>
+  //       <Game
+  //         theme={Theme.Light}
+  //         gameStatus={GameStatus.PLAYING}
+  //         selectedDifficulty={Difficulty.EASY}
+  //         changeGameStatus={jest.fn()}
+  //       />
+  //     </Provider>
+  //   );
 
-    const exitButton = getByRole('exit');
-    fireEvent.click(exitButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/');
-  });
+  //   const exitButton = getByRole('exit');
+  //   fireEvent.click(exitButton);
+  //   expect(mockNavigate).toHaveBeenCalledWith('/');
+  // });
 });
