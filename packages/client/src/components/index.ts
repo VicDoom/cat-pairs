@@ -1,4 +1,5 @@
 export { PageWrapper } from './page-wrapper';
+export { Header } from './header';
 export { NavigationBar } from './navigation-bar';
 export { IconButton } from './icon-button';
 export { Loader } from './loader';

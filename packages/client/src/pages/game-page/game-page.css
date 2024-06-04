@@ -23,7 +23,7 @@
 .game__exit-wrapper {
   display: flex;
   align-items: end;
-  width: 155px;
+  justify-content: flex-end;
 }
 
 .game:fullscreen .game__exit-wrapper {

@@ -2,7 +2,6 @@
   margin: 0 auto;
   min-width: 539px;
   max-width: 780px;
-  margin-top: 110px;
 }
 
 .profile-page__container {
@@ -28,5 +27,4 @@
 
 .profile-page__exit {
   margin-top: 10px;
-  margin-left: 620px;
 }

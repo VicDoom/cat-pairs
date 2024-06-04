@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  ExitButton,
-  GameApi,
-  GameControls,
-  GameField,
-  GameInfo,
-} from '@/components';
+import { GameApi, GameControls, GameField, GameInfo } from '@/components';
 import { Difficulty, GameStatus } from '@/components/game/types';
-import { useNavigate } from 'react-router-dom';
 import { Color, Theme } from '@/helpers/constants/global';
 
 interface GameProps {
@@ -29,7 +22,6 @@ export const Game: React.FC<GameProps> = ({
   const [paused, setPaused] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isGameReset, setIsGameReset] = useState<boolean>(false);
-  const navigate = useNavigate();
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -50,9 +42,6 @@ export const Game: React.FC<GameProps> = ({
   }, [changeGameStatus, gameStatus, selectedDifficulty]);
 
   if (!game) return <div style={{ color: 'white' }}>Loading...</div>;
-  const handleExitGame = () => {
-    navigate('/');
-  };
   return (
     <div className='game' ref={gameRef}>
       <GameInfo
@@ -78,9 +67,6 @@ export const Game: React.FC<GameProps> = ({
           isFullscreen={isFullscreen}
         />
         <GameField game={game} canvasRef={canvasRef} />
-      </div>
-      <div className='game__exit-wrapper'>
-        <ExitButton onClick={handleExitGame} />
       </div>
     </div>
   );
