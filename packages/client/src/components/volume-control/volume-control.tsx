@@ -11,7 +11,6 @@ interface VolumeControlProps {
 
 export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const theme = useAppSelector(state => state.user.theme);
 
   const [muted, setMuted] = useState<boolean>(() => {
@@ -23,18 +22,6 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
     return storedVolume ? parseFloat(storedVolume) : 0.5;
   });
   const [hovered, setHovered] = useState(false);
-
-  useEffect(() => {
-    const buttonElement = buttonRef.current;
-    if (buttonElement) {
-      buttonElement.onclick = handleToggleMute;
-    }
-    return () => {
-      if (buttonElement) {
-        buttonElement.onclick = null;
-      }
-    };
-  }, [buttonRef.current]);
 
   useEffect(() => {
     localStorageSetItem('muted', JSON.stringify(muted));
@@ -88,7 +75,7 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ src }) => {
           className='volume-control__volume'
         />
       )}
-      <button ref={buttonRef} className={'volume-control__button'}>
+      <button onClick={handleToggleMute} className={'volume-control__button'}>
         {muted ? <MutedOutlined /> : <SoundOutlined />}
       </button>
       <audio ref={audioRef} loop className='audio-element'>
